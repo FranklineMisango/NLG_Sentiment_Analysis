@@ -1,12 +1,14 @@
+
 import streamlit as st
 from cleaner import search_for_stock_news_urls, strip_unwanted_urls, scrape_and_process
-from summaries import summarize_all_articles, perform_sentiment_analysis_on_single_summary
+from openai_trainer import sentiment_analysis
+from summaries import summarize_all_articles
 
 st.set_page_config(layout="wide")
 
 def main():
-    st.title("Frankline & Associates LLP. Self-rostering Ticker sentiment Analysis")
-    st.success("Pipelining done to suit Google's BERT & Meta BART Summarizer")
+    st.title("Frankline & Co. LP. Self-rostering Ticker sentiment Analysis")
+    st.success("Pipelining done to suit OpenAILLM completions")
 
     ticker = st.text_input("Enter the stock/crypto ticker you want to monitor:")
 
@@ -28,7 +30,7 @@ def main():
 
         for summary in final_summaries[ticker].values():
             st.write(summary)
-            final_scores = perform_sentiment_analysis_on_single_summary(summary)
+            final_scores = sentiment_analysis(summary)
             st.write(final_scores)
             negative_count = sum(1 for x in final_scores if x['label'] == 'NEGATIVE')
             if negative_count > 0:
