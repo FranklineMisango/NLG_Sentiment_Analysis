@@ -195,3 +195,4 @@ wsproto==1.2.0
 yahoo-earnings-calendar==0.6.0
 yarl==1.9.4
 yfinance==0.2.40
+openai==1.33.0
