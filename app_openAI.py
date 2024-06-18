@@ -30,19 +30,6 @@ def main():
             st.write(summary)
             final_scores = sentiment_analysis(summary)
             st.write(final_scores)
-
-            '''
-            negative_count = sum(1 for x in final_scores if x['label'] == 'negative')
-            if negative_count > 0:
-                negative_summaries_count += 1
-
-        st.write(f"Total negative summaries post-sentiment analysis for {ticker}: {negative_summaries_count}")
-        if negative_summaries_count > 5:
-            st.warning(f"The model finds that stock {ticker} is not doing well currently. We recommend that you don't buy for short holding.")
-        elif negative_summaries_count == 5:
-            st.info(f"The model generates a neutral view on stock {ticker}, further research is needed: Bloomberg / Expedia refinement.")
-        else:
-            st.success(f"The model finds that stock {ticker} is good to buy for the short term. Contact our brokers to buy.")
-        '''
+            
 if __name__ == '__main__':
     main()
