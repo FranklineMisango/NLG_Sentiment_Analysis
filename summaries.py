@@ -1,9 +1,10 @@
 import concurrent.futures
 from trainer import summarizer, sentiment
+from Trainer_pipeline import pipe
 
 def summarize_article(article):
-    try:
-        summary = summarizer(article, max_length=120, min_length=30, do_sample=False)
+    try: 
+        summary = pipe(article, max_length=120, min_length=30, do_sample=False) #Testing high level pipelines
         if summary and len(summary) > 0:
             return summary[0]['summary_text']
         return None
