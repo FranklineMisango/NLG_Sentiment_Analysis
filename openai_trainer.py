@@ -10,10 +10,10 @@ def sentiment_analysis(text):
     response = openai.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "Analyze the sentiment of the given text and return a single word response (positive, negative, or neutral)."},
+            {"role": "system", "content": "Analyze the sentiment of the given text and return a detailed response (positive, negative, or neutral) with a brief explanation."},
             {"role": "user", "content": text}
         ],
-        max_tokens=20,
+        max_tokens=256,  # Adjust to suit your needs
         n=1,
         stop=None,
         temperature=0.5,
@@ -22,6 +22,6 @@ def sentiment_analysis(text):
     )
 
     # Extract the sentiment from the API response
-    sentiment = response.choices[0].message.content.strip().lower()
+    sentiment_response = response.choices[0].message.content.strip()
 
-    return sentiment
+    return sentiment_response

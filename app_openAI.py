@@ -7,8 +7,8 @@ from summaries import summarize_all_articles
 st.set_page_config(layout="wide")
 
 def main():
-    st.title("Frankline & Associates LLP. Self-rostering Ticker sentiment Analysis")
-    st.success("Pipelining done to suit OpenAI_LLM")
+    st.title("Frankline & Co. Self-rostering Ticker sentiment Analysis")
+    st.success("Pipelining done with OpenAI")
 
     ticker = st.text_input("Enter the stock/crypto ticker you want to monitor:")
 
@@ -17,7 +17,7 @@ def main():
     predict_button = st.button("Predict")
 
     if predict_button:
-        st.header(f"Analysis for {ticker}, wait a few seconds....")
+        st.header(f"BART Summarization for {ticker}, wait a few moments....")
         excluded_list = ['maps', 'policies', 'preferences', 'support', 'accounts']
         raw_urls = {ticker: search_for_stock_news_urls(ticker, source_choice)}
         cleaned_urls = {ticker: strip_unwanted_urls(raw_urls[ticker], excluded_list)}
@@ -25,11 +25,11 @@ def main():
         final_summaries = {ticker: summarize_all_articles(articles[ticker])}
         st.write(final_summaries)
 
-        st.header("ChatGPT Sentiment Analysis for the summaries below...")
+        st.header("ChatGPT Did the sentiment Analysis for the summaries below.....")
         for summary in final_summaries[ticker].values():
             st.write(summary)
             final_scores = sentiment_analysis(summary)
-            st.write(final_scores)
-            
+            st.success(final_scores)
+
 if __name__ == '__main__':
     main()
