@@ -25,14 +25,14 @@ def main():
         final_summaries = {ticker: summarize_all_articles(articles[ticker])}
         st.write(final_summaries)
 
-        st.header("BERT Sentiment Analysis for the summaries below...")
-        negative_summaries_count = 0
-
+        st.header("ChatGPT Sentiment Analysis for the summaries below...")
         for summary in final_summaries[ticker].values():
             st.write(summary)
             final_scores = sentiment_analysis(summary)
             st.write(final_scores)
-            negative_count = sum(1 for x in final_scores if x['label'] == 'NEGATIVE')
+
+            '''
+            negative_count = sum(1 for x in final_scores if x['label'] == 'negative')
             if negative_count > 0:
                 negative_summaries_count += 1
 
@@ -43,6 +43,6 @@ def main():
             st.info(f"The model generates a neutral view on stock {ticker}, further research is needed: Bloomberg / Expedia refinement.")
         else:
             st.success(f"The model finds that stock {ticker} is good to buy for the short term. Contact our brokers to buy.")
-
+        '''
 if __name__ == '__main__':
     main()
