@@ -1,10 +1,9 @@
 import concurrent.futures
-from trainer import summarizer, sentiment
-from Trainer_pipeline import pipe
+from summarize_pipeline import summarize_pipe
 
 def summarize_article(article):
     try: 
-        summary = pipe(article, max_length=120, min_length=30, do_sample=False) #Testing high level pipelines
+        summary = summarize_pipe(article, max_length=120, min_length=30, do_sample=False) #Testing high level pipelines
         if summary and len(summary) > 0:
             return summary[0]['summary_text']
         return None
@@ -29,11 +28,3 @@ def summarize_all_articles(articles):
                 print(f"Error processing article: {article}, {str(e)}")
 
     return summaries
-
-def perform_sentiment_analysis_on_single_summary(summary):
-    try:
-        score = sentiment(summary)
-        return score
-    except Exception as e:
-        print(f"Error during sentiment analysis: {str(e)}")
-        return None
