@@ -27,11 +27,6 @@ NB : This ML model is Novel and may occasionally generate wrong Data
 ## Llama70B
 under construction
 
-
 ## OpenAI Docureader & sentiment analysis
-
-Under construction
-
-## Amazon Bedrock GAI
 
 Under construction
