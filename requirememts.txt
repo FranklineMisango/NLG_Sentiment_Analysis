@@ -2,6 +2,6 @@ streamlit
 transformers
 requests
 bs4
-re
+regex
 openai
 concurrent
