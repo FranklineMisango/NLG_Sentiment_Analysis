@@ -1,0 +1,7 @@
+streamlit
+transformers
+requests
+bs4
+re
+openai
+concurrent
