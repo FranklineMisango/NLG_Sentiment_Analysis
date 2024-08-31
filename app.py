@@ -2,7 +2,7 @@
 import streamlit as st
 from cleaner import search_for_stock_news_urls, strip_unwanted_urls, scrape_and_process
 from openai_trainer import sentiment_analysis
-#from summaries import summarize_all_articles
+from summaries import summarize_all_articles
 #from bert_sentiment_pipeline import sentiment_bert_one
 
 st.set_page_config(layout="wide")
