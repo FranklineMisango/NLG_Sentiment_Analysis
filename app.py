@@ -73,6 +73,6 @@ def main():
                 st.info(f"The model generates a neutral view on stock {ticker}, further research is needed: Bloomberg / Expedia refinement.")
             else:
                 st.success(f"The model finds that stock {ticker} is good to buy for the short term. Contact our brokers to buy.")
-
+'''
 if __name__ == '__main__':
     main()
