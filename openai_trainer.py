@@ -1,8 +1,12 @@
 import openai
 import streamlit as st
+import os
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # Set the OpenAI API key
-openai.api_key = st.secrets["OpenAIAPI"]
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 # Define a function to perform sentiment analysis
 def sentiment_analysis(text):
