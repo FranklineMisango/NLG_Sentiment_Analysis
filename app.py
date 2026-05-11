@@ -5,61 +5,89 @@ from summaries import summarize_all_articles
 from bert_sentiment_pipeline import sentiment_bert_one
 from transformers import pipeline
 
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="Frankline & Co. Sentiment Analysis", layout="wide")
 
-# Using object notation
-st.title("Frankline & Co. Self-rostering Ticker sentiment Analysis")
+st.title("Frankline & Co. Ticker Sentiment Analysis")
 st.success("Base Summarization done with BART, Sentiment done with selected pipelines")
 
-add_selectbox = st.sidebar.selectbox(
+pipeline_choice = st.sidebar.selectbox(
     "Which Pipeline would you like to use?",
-    ("OpenAI", "BERT")) # Add BERT if you need more computation power
+    ("OpenAI", "BERT")
+)
+
+# Source options — "All" fetches from both NewsAPI + yfinance combined
+source_options = [
+    "All",
+    "Yahoo Finance",
+    "Bloomberg",
+    "CNBC",
+    "Reuters",
+    "Motley Fool",
+    "Investopedia",
+    "Google Finance",
+    "MarketWatch",
+]
+
 
 def main():
-    if add_selectbox == "OpenAI":
-        ticker = st.text_input("Enter the stock/crypto ticker you want to monitor:")
+    ticker = st.text_input("Enter the stock/crypto/ETF ticker you want to monitor (e.g. TSLA, INTC, BTC-USD, SPY):")
 
-        sources = ["Bloomberg", "Yahoo Finance", "Investopedia", "Google Finance"]
-        source_choice = st.selectbox("Select the source you want to use:", sources)
-        predict_button = st.button("Predict")
+    source_choice = st.selectbox("Select the source you want to use:", source_options)
+    predict_button = st.button("Predict")
 
-        if predict_button:
-            st.header(f"BART Summarization for {ticker}, wait a few moments....")
-            excluded_list = ['maps', 'policies', 'preferences', 'support', 'accounts']
-            raw_urls = {ticker: search_for_stock_news_urls(ticker, source_choice)}
-            cleaned_urls = {ticker: strip_unwanted_urls(raw_urls[ticker], excluded_list)}
-            articles = {ticker: scrape_and_process(cleaned_urls[ticker])}
-            final_summaries = {ticker: summarize_all_articles(articles[ticker])}
+    if not predict_button or not ticker:
+        return
+
+    ticker = ticker.strip().upper()
+
+    with st.spinner(f"Fetching & scraping news for {ticker}..."):
+        excluded_list = ["maps", "policies", "preferences", "support", "accounts"]
+        raw_urls = search_for_stock_news_urls(ticker, source_choice)
+        cleaned_urls = strip_unwanted_urls(raw_urls, excluded_list)
+        articles = scrape_and_process(cleaned_urls)
+
+    # Show what we got
+    valid_articles = [a for a in articles if a is not None]
+    st.info(f"Found {len(raw_urls)} URLs, {len(cleaned_urls)} after filtering, {len(valid_articles)} successfully scraped")
+
+    if not valid_articles:
+        st.error("No articles could be scraped. Try a different ticker or source.")
+        return
+
+    # Show article previews in an expander
+    with st.expander(f"View {len(valid_articles)} scraped articles"):
+        for i, article_text in enumerate(valid_articles):
+            st.markdown(f"**Article {i+1}** ({len(article_text.split())} words)")
+            st.text_area(f"article_{i}", article_text, height=150, key=f"article_{i}", label_visibility="collapsed")
+            st.divider()
+
+    if pipeline_choice == "OpenAI":
+        st.header(f"BART Summarization for {ticker}...")
+        with st.spinner("Summarizing articles..."):
+            final_summaries = summarize_all_articles(valid_articles)
             st.write(final_summaries)
 
-            st.header("ChatGPT Did the sentiment Analysis for the summaries below.....")
-            for summary in final_summaries[ticker].values():
-                st.write(summary)
+        st.header("ChatGPT Sentiment Analysis")
+        for summary in final_summaries.values():
+            st.write(summary)
+            with st.spinner("Analyzing sentiment..."):
                 final_scores = sentiment_analysis(summary)
-                st.success(final_scores)
-    
-    if add_selectbox == "BERT":
-        ticker = st.text_input("Enter the stock/crypto ticker you want to monitor:")
+            st.success(final_scores)
 
-        sources = ["Bloomberg", "Yahoo Finance", "Investopedia", "Google Finance"]
-        source_choice = st.selectbox("Select the source you want to use:", sources)
-        predict_button = st.button("Predict")
-
-        if predict_button:
-            st.header(f"BERT Summarization for {ticker}, wait a few moments....")
-            excluded_list = ['maps', 'policies', 'preferences', 'support', 'accounts']
-            raw_urls = {ticker: search_for_stock_news_urls(ticker, source_choice)}
-            cleaned_urls = {ticker: strip_unwanted_urls(raw_urls[ticker], excluded_list)}
-            articles = {ticker: scrape_and_process(cleaned_urls[ticker])}
-            final_summaries = {ticker: summarize_all_articles(articles[ticker])}
+    elif pipeline_choice == "BERT":
+        st.header(f"BART Summarization for {ticker}...")
+        with st.spinner("Summarizing articles..."):
+            final_summaries = summarize_all_articles(valid_articles)
             st.write(final_summaries)
 
-            st.header("BERT Did the sentiment Analysis for the summaries below.....")
-            sentiment_pipeline = pipeline("sentiment-analysis", device=0)
-            for summary in final_summaries[ticker].values():
-                st.write(summary)
+        st.header("BERT Sentiment Analysis")
+        sentiment_pipeline = pipeline("sentiment-analysis", device=0)
+        for summary in final_summaries.values():
+            st.write(summary)
+            with st.spinner("Analyzing sentiment..."):
                 final_scores = sentiment_pipeline(summary)
-                st.success(final_scores)
+            st.success(final_scores)
+
 
 if __name__ == "__main__":
     main()
